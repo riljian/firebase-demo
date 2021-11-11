@@ -1,9 +1,22 @@
-import { createContext, FC, useContext, useMemo, useState } from 'react'
-
-type User = {}
+import {
+  Auth,
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  User,
+} from '@firebase/auth'
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 type State = {
   me: User | null
+  firebaseAuth: Auth | null
 }
 type Context = {
   state: State & {
@@ -16,6 +29,7 @@ type Context = {
 
 const initialState: State = {
   me: null,
+  firebaseAuth: null,
 }
 const AuthContext = createContext<Context>({
   state: { ...initialState, isSigned: false },
@@ -25,20 +39,41 @@ const AuthContext = createContext<Context>({
 })
 
 const AuthProvider: FC = ({ children }) => {
-  const [{ me }, setState] = useState(() => ({
+  const [{ me, firebaseAuth }, setState] = useState(() => ({
     ...initialState,
+    firebaseAuth: getAuth(),
   }))
   const { actions } = useMemo(
     () => ({
       actions: {
-        signOut: () => {},
+        signOut: () => {
+          if (firebaseAuth) {
+            signOut(firebaseAuth)
+              .then(() => {
+                setState((s) => ({ ...s, me: null }))
+              })
+              .catch((error) => {
+                console.error(error)
+              })
+          }
+        },
       },
     }),
-    []
+    [firebaseAuth]
   )
 
+  useEffect(() => {
+    if (firebaseAuth) {
+      return onAuthStateChanged(firebaseAuth, (user) => {
+        setState((s) => ({ ...s, me: user }))
+      })
+    }
+  }, [firebaseAuth])
+
   return (
-    <AuthContext.Provider value={{ state: { me, isSigned: !!me }, actions }}>
+    <AuthContext.Provider
+      value={{ state: { me, firebaseAuth, isSigned: !!me }, actions }}
+    >
       {children}
     </AuthContext.Provider>
   )
