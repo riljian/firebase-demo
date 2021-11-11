@@ -1,7 +1,17 @@
 import type { NextPage } from 'next'
+import JoinChatRoom from '../components/JoinChatRoom'
+import Login from '../components/Login'
+import { useAuthContext } from '../providers/auth'
 
 const Home: NextPage = () => {
-  return null
+  const {
+    state: { isSigned },
+  } = useAuthContext()
+
+  if (isSigned) {
+    return <JoinChatRoom />
+  }
+  return <Login />
 }
 
 export default Home
