@@ -1,4 +1,5 @@
 import { getApps, initializeApp } from '@firebase/app'
+import { CssBaseline } from '@mui/material'
 import type { AppProps } from 'next/app'
 import { config } from '../configs/firebase'
 import AuthProvider from '../providers/auth'
@@ -10,6 +11,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <AuthProvider>
+      <CssBaseline />
       <Component {...pageProps} />
     </AuthProvider>
   )
