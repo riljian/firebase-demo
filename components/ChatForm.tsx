@@ -1,14 +1,16 @@
 import { Button, Stack, TextField } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { FC, useCallback } from 'react'
+import SendFile from './SendFile'
 
 type Props = {
   leaveMessage: (message: string) => Promise<void>
+  sendFile: (file: File) => Promise<void>
 }
 
 const initialValues = { message: '' }
 
-const ChatForm: FC<Props> = ({ leaveMessage }) => {
+const ChatForm: FC<Props> = ({ leaveMessage, sendFile }) => {
   const onFormikSubmit = useCallback(
     ({ message }, { resetForm }) => {
       leaveMessage(message)
@@ -25,6 +27,7 @@ const ChatForm: FC<Props> = ({ leaveMessage }) => {
     <Formik initialValues={initialValues} onSubmit={onFormikSubmit}>
       <Form>
         <Stack direction="row" spacing={2}>
+          <SendFile sendFile={sendFile} />
           <Field
             name="message"
             as={TextField}
