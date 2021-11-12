@@ -1,5 +1,9 @@
 import { FirebaseOptions } from '@firebase/app'
-import { EmailAuthProvider, GoogleAuthProvider } from '@firebase/auth'
+import {
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  PhoneAuthProvider,
+} from '@firebase/auth'
 import firebaseui from 'firebaseui'
 
 export const config: FirebaseOptions = {
@@ -11,6 +15,12 @@ export const uiConfig: firebaseui.auth.Config = {
   signInOptions: [
     GoogleAuthProvider.PROVIDER_ID,
     EmailAuthProvider.PROVIDER_ID,
+    {
+      provider: PhoneAuthProvider.PROVIDER_ID,
+      recaptchaParameters: {
+        size: 'invisible',
+      },
+    },
   ],
   callbacks: {
     signInSuccessWithAuthResult: () => false,
