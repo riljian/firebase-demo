@@ -1,10 +1,6 @@
-import {
-  Auth,
-  getAuth,
-  onAuthStateChanged,
-  signOut,
-  User,
-} from '@firebase/auth'
+import { onAuthStateChanged, signOut, User } from '@firebase/auth'
+import { FirebaseAuth } from '@firebase/auth-types'
+import firebase from 'firebase/compat/app'
 import {
   createContext,
   FC,
@@ -16,7 +12,7 @@ import {
 
 type State = {
   me: User | null
-  firebaseAuth: Auth | null
+  firebaseAuth: FirebaseAuth | null
 }
 type Context = {
   state: State & {
@@ -41,7 +37,7 @@ const AuthContext = createContext<Context>({
 const AuthProvider: FC = ({ children }) => {
   const [{ me, firebaseAuth }, setState] = useState(() => ({
     ...initialState,
-    firebaseAuth: getAuth(),
+    firebaseAuth: firebase.auth(),
   }))
   const { actions } = useMemo(
     () => ({
