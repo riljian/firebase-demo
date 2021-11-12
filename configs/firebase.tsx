@@ -1,5 +1,5 @@
 import { FirebaseOptions } from '@firebase/app'
-import { GoogleAuthProvider } from '@firebase/auth'
+import { EmailAuthProvider, GoogleAuthProvider } from '@firebase/auth'
 import firebaseui from 'firebaseui'
 
 export const config: FirebaseOptions = {
@@ -8,7 +8,10 @@ export const config: FirebaseOptions = {
   projectId: 'fir-demo-69b11',
 }
 export const uiConfig: firebaseui.auth.Config = {
-  signInOptions: [GoogleAuthProvider.PROVIDER_ID],
+  signInOptions: [
+    GoogleAuthProvider.PROVIDER_ID,
+    EmailAuthProvider.PROVIDER_ID,
+  ],
   callbacks: {
     signInSuccessWithAuthResult: () => false,
   },
