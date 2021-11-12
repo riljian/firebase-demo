@@ -1,7 +1,10 @@
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+import * as functions from "firebase-functions";
+import {nanoid} from "nanoid";
+
+export const getRandomKey = functions.https.onCall((data, context) => {
+  if (!context.auth) {
+    throw Error("Unauthenticated");
+  }
+  const {key_prefix: keyPrefix} = data;
+  return {key: `${keyPrefix}_${nanoid(16)}`};
+});
