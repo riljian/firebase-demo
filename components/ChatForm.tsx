@@ -1,6 +1,7 @@
 import { Button, Stack, TextField } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { FC, useCallback } from 'react'
+import GetRandomKey from './GetRandomKey'
 import SendFile from './SendFile'
 
 type Props = {
@@ -28,6 +29,7 @@ const ChatForm: FC<Props> = ({ leaveMessage, sendFile }) => {
       <Form>
         <Stack direction="row" spacing={2}>
           <SendFile sendFile={sendFile} />
+          <GetRandomKey />
           <Field
             name="message"
             as={TextField}
