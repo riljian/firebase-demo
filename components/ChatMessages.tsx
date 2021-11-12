@@ -1,3 +1,4 @@
+import { ClassNames } from '@emotion/react'
 import { Box, Stack, Typography } from '@mui/material'
 import { FC } from 'react'
 import { useAuthContext } from '../providers/auth'
@@ -6,12 +7,16 @@ export type Message = {
   id: string
   sender: string
   message: string
+  type: 'text' | 'file'
+  timestamp: {
+    seconds: number
+    nanoseconds: number
+  }
 }
 type Props = {
   messages: Message[]
 }
-type MessageProps = {
-  message: string
+type MessageProps = Pick<Message, 'message' | 'type'> & {
   backgroundColor?: string
   color?: string
   justifyContent?: string
@@ -19,6 +24,7 @@ type MessageProps = {
 
 const Message: FC<MessageProps> = ({
   message,
+  type,
   backgroundColor,
   color,
   justifyContent,
@@ -37,7 +43,18 @@ const Message: FC<MessageProps> = ({
         },
       }}
     >
-      <Typography variant="body2">{message}</Typography>
+      {type === 'text' && <Typography variant="body2">{message}</Typography>}
+      {type === 'file' && (
+        <ClassNames>
+          {({ css }) => (
+            <img
+              src={message}
+              alt="sample image"
+              className={css({ maxHeight: '100px', maxWidth: '100%' })}
+            />
+          )}
+        </ClassNames>
+      )}
     </Box>
   </Box>
 )
@@ -48,18 +65,24 @@ const ChatMessages: FC<Props> = ({ messages }) => {
   } = useAuthContext()
   return (
     <Stack spacing={2}>
-      {messages.map(({ id, message, sender }) => {
+      {messages.map(({ id, message, sender, type }) => {
         const isMessageFromMe = me && me.uid === sender
         return isMessageFromMe ? (
           <Message
             key={id}
             message={message}
+            type={type}
             justifyContent="flex-end"
             color="white"
             backgroundColor="#0b93f6"
           />
         ) : (
-          <Message key={id} message={message} backgroundColor="#e5e5ea" />
+          <Message
+            key={id}
+            message={message}
+            type={type}
+            backgroundColor="#e5e5ea"
+          />
         )
       })}
     </Stack>

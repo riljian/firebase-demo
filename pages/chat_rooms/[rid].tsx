@@ -33,18 +33,24 @@ const useChatRoom = (chatRoomId?: string) => {
     state: { me },
   } = useAuthContext()
   const [state, setState] = useState(() => initialState)
-  const { leaveMessage } = useMemo(() => {
+  const { leaveMessage, sendFile } = useMemo(() => {
     const colRef = state.messageCollectionRef
     if (!me || !colRef) {
-      return { leaveMessage: () => Promise.reject('Uninitialized') }
+      const reject = () => Promise.reject('Uninitialized')
+      return { leaveMessage: reject, sendFile: reject }
     }
     return {
-      leaveMessage: (message: string) =>
-        addDoc(colRef, {
+      leaveMessage: async (message: string) => {
+        await addDoc(colRef, {
           message,
           sender: me.uid,
+          type: 'text',
           timestamp: serverTimestamp(),
         }).then(() => {}),
+      sendFile: (file: File) => {
+        console.log(file)
+        return Promise.resolve()
+      },
     }
   }, [me, state.messageCollectionRef])
 
@@ -75,6 +81,7 @@ const useChatRoom = (chatRoomId?: string) => {
     state,
     actions: {
       leaveMessage,
+      sendFile,
     },
   }
 }
@@ -84,7 +91,7 @@ const ChatRoom: NextPage = () => {
   const { rid } = router.query
   const {
     state: { messages },
-    actions: { leaveMessage },
+    actions: { leaveMessage, sendFile },
   } = useChatRoom(rid as string)
 
   return (
@@ -94,7 +101,7 @@ const ChatRoom: NextPage = () => {
           <Box flexGrow={1} sx={{ overflow: 'auto' }}>
             <ChatMessages messages={messages} />
           </Box>
-          <ChatForm leaveMessage={leaveMessage} />
+          <ChatForm leaveMessage={leaveMessage} sendFile={sendFile} />
         </Stack>
       </Container>
     </AuthGuard>
