@@ -1,3 +1,4 @@
+import { getDownloadURL, getStorage, ref, uploadBytes } from '@firebase/storage'
 import { Box, Container, Stack } from '@mui/material'
 import {
   addDoc,
@@ -22,10 +23,24 @@ type State = {
   messages: Message[]
   messageCollectionRef: CollectionReference | null
 }
+type MessageWrapper = Omit<Message, 'id'>
 
 const initialState: State = {
   messages: [],
   messageCollectionRef: null,
+}
+
+const messageWrapperLoader = async (
+  messageWrapper: MessageWrapper & { id: string }
+) => {
+  const { type, message } = messageWrapper
+  if (type === 'text') {
+    return messageWrapper
+  }
+  return {
+    ...messageWrapper,
+    message: await getDownloadURL(ref(getStorage(), message)),
+  }
 }
 
 const useChatRoom = (chatRoomId?: string) => {
@@ -46,10 +61,17 @@ const useChatRoom = (chatRoomId?: string) => {
           sender: me.uid,
           type: 'text',
           timestamp: serverTimestamp(),
-        }).then(() => {}),
-      sendFile: (file: File) => {
-        console.log(file)
-        return Promise.resolve()
+        })
+      },
+      sendFile: async (file: File) => {
+        const filename = file.name
+        await uploadBytes(ref(getStorage(), filename), file)
+        await addDoc(colRef, {
+          message: filename,
+          sender: me.uid,
+          type: 'file',
+          timestamp: serverTimestamp(),
+        })
       },
     }
   }, [me, state.messageCollectionRef])
@@ -68,12 +90,25 @@ const useChatRoom = (chatRoomId?: string) => {
       orderBy('timestamp', 'desc'),
       limit(10)
     )
-    return onSnapshot(q, (snapshot) => {
-      const messages: Message[] = snapshot.docs.map((doc) => ({
+    return onSnapshot(q, async (snapshot) => {
+      const messageWrappers = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...(doc.data() as Omit<Message, 'id'>),
+        ...(doc.data() as MessageWrapper),
       }))
-      setState((s) => ({ ...s, messages: messages.reverse() }))
+      const messages: Message[] = await Promise.all(
+        messageWrappers.map((wrapper) => messageWrapperLoader(wrapper))
+      )
+      messages.sort((a, b) => {
+        if (!a.timestamp) {
+          return 1
+        } else if (!b.timestamp) {
+          return -1
+        } else if (a.timestamp.seconds === b.timestamp.seconds) {
+          return a.timestamp.nanoseconds - b.timestamp.nanoseconds
+        }
+        return a.timestamp.seconds - b.timestamp.seconds
+      })
+      setState((s) => ({ ...s, messages }))
     })
   }, [chatRoomId])
 
