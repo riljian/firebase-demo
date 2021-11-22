@@ -11,6 +11,8 @@ export const config: FirebaseOptions = {
   authDomain: 'fir-demo-69b11.firebaseapp.com',
   storageBucket: 'fir-demo-69b11.appspot.com',
   projectId: 'fir-demo-69b11',
+  appId: '1:349188567153:web:40637fb458cac31161abd0',
+  measurementId: 'G-QB8PW4M2TG',
 }
 export const uiConfig: firebaseui.auth.Config = {
   signInOptions: [

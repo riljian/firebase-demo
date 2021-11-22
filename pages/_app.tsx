@@ -6,6 +6,7 @@ import 'firebase/compat/auth'
 import type { AppProps } from 'next/app'
 import { config } from '../configs/firebase'
 import AuthProvider from '../providers/AuthProvider'
+import SiteProvider from '../providers/SiteProvider'
 
 const App = ({ Component, pageProps }: AppProps) => {
   if (getApps().length === 0) {
@@ -14,8 +15,10 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <AuthProvider>
-      <CssBaseline />
-      <Component {...pageProps} />
+      <SiteProvider>
+        <CssBaseline />
+        <Component {...pageProps} />
+      </SiteProvider>
     </AuthProvider>
   )
 }
