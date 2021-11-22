@@ -1,38 +1,50 @@
-import { getAnalytics, logEvent as nativeLogEvent } from 'firebase/analytics'
+import {
+  Analytics,
+  getAnalytics,
+  logEvent as nativeLogEvent,
+} from 'firebase/analytics'
 import { createContext, FC, useContext, useMemo } from 'react'
 
 type DropFirst<T extends unknown[]> = T extends [any, ...infer U] ? U : never
 type SiteEventLoggerParams = DropFirst<Parameters<typeof nativeLogEvent>>
 type Context = {
-  state: {}
+  state: {
+    analytics: null | Analytics
+  }
   actions: {
     logEvent: (...params: SiteEventLoggerParams) => void
   }
 }
 
 const SiteContext = createContext<Context>({
-  state: {},
+  state: {
+    analytics: null,
+  },
   actions: {
     logEvent: () => {},
   },
 })
 
 const SiteProvider: FC = ({ children }) => {
-  const { logEvent } = useMemo(() => {
-    if (typeof window === 'undefined') {
+  const { logEvent, analytics } = useMemo(() => {
+    const analytics = typeof window === 'undefined' ? null : getAnalytics()
+    if (analytics) {
       return {
-        logEvent: () => {},
+        analytics,
+        logEvent: (...params: SiteEventLoggerParams) => {
+          nativeLogEvent(analytics, ...params)
+        },
       }
     }
-    const analytics = getAnalytics()
     return {
-      logEvent: (...params: SiteEventLoggerParams) => {
-        nativeLogEvent(analytics, ...params)
-      },
+      analytics: null,
+      logEvent: () => {},
     }
   }, [])
   return (
-    <SiteContext.Provider value={{ state: {}, actions: { logEvent } }}>
+    <SiteContext.Provider
+      value={{ state: { analytics }, actions: { logEvent } }}
+    >
       {children}
     </SiteContext.Provider>
   )

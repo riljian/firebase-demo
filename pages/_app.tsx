@@ -14,12 +14,12 @@ const App = ({ Component, pageProps }: AppProps) => {
   }
 
   return (
-    <AuthProvider>
-      <SiteProvider>
+    <SiteProvider>
+      <AuthProvider>
         <CssBaseline />
         <Component {...pageProps} />
-      </SiteProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </SiteProvider>
   )
 }
 

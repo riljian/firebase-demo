@@ -1,5 +1,6 @@
 import { onAuthStateChanged, signOut, User } from '@firebase/auth'
 import { FirebaseAuth } from '@firebase/auth-types'
+import { setUserId } from 'firebase/analytics'
 import firebase from 'firebase/compat/app'
 import {
   createContext,
@@ -9,6 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useSiteContext } from './SiteProvider'
 
 type State = {
   me: User | null
@@ -35,6 +37,9 @@ const AuthContext = createContext<Context>({
 })
 
 const AuthProvider: FC = ({ children }) => {
+  const {
+    state: { analytics },
+  } = useSiteContext()
   const [{ me, firebaseAuth }, setState] = useState(() => ({
     ...initialState,
     firebaseAuth: firebase.auth(),
@@ -61,10 +66,13 @@ const AuthProvider: FC = ({ children }) => {
   useEffect(() => {
     if (firebaseAuth) {
       return onAuthStateChanged(firebaseAuth, (user) => {
+        if (analytics && user) {
+          setUserId(analytics, user.uid)
+        }
         setState((s) => ({ ...s, me: user }))
       })
     }
-  }, [firebaseAuth])
+  }, [firebaseAuth, analytics])
 
   return (
     <AuthContext.Provider
