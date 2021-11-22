@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import JoinChatRoom from '../components/JoinChatRoom'
 import Login from '../components/Login'
-import { useAuthContext } from '../providers/auth'
+import { useAuthContext } from '../providers/AuthProvider'
 
 const Home: NextPage = () => {
   const {
