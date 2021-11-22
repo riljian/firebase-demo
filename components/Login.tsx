@@ -3,7 +3,7 @@
 import 'firebaseui/dist/firebaseui.css'
 import { useEffect } from 'react'
 import { uiConfig } from '../configs/firebase'
-import { useAuthContext } from '../providers/auth'
+import { useAuthContext } from '../providers/AuthProvider'
 
 const firebaseUIContainerId = 'firebaseui-auth-container'
 

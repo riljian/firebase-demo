@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from 'react'
 import AuthGuard from '../../components/AuthGuard'
 import ChatForm from '../../components/ChatForm'
 import ChatMessages, { Message } from '../../components/ChatMessages'
-import { useAuthContext } from '../../providers/auth'
+import { useAuthContext } from '../../providers/AuthProvider'
 
 type State = {
   messages: Message[]

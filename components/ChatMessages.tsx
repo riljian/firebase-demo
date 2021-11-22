@@ -1,7 +1,8 @@
 import { ClassNames } from '@emotion/react'
 import { Box, Stack, Typography } from '@mui/material'
+import Image from 'next/image'
 import { FC } from 'react'
-import { useAuthContext } from '../providers/auth'
+import { useAuthContext } from '../providers/AuthProvider'
 
 export type Message = {
   id: string
@@ -47,7 +48,7 @@ const Message: FC<MessageProps> = ({
       {type === 'file' && (
         <ClassNames>
           {({ css }) => (
-            <img
+            <Image
               src={message}
               alt="sample image"
               className={css({ maxHeight: '100px', maxWidth: '100%' })}

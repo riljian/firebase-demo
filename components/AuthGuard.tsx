@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect } from 'react'
 import { LOGIN_PATH } from '../configs/path'
-import { useAuthContext } from '../providers/auth'
+import { useAuthContext } from '../providers/AuthProvider'
 
 const AuthGuard: FC = ({ children }) => {
   const router = useRouter()
