@@ -13,6 +13,7 @@ export const config: FirebaseOptions = {
   projectId: 'fir-demo-69b11',
   appId: '1:349188567153:web:40637fb458cac31161abd0',
   measurementId: 'G-QB8PW4M2TG',
+  messagingSenderId: '349188567153',
 }
 export const uiConfig: firebaseui.auth.Config = {
   signInOptions: [
